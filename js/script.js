@@ -5,7 +5,12 @@ const global = {
       type: '',
       page: '1',
       totalPages: 1
-    }
+    },
+
+    api: {
+       apiKey: 'd46a260bcd3d09bb7a83480819d5c14e',
+       apiUrl: 'https://api.themoviedb.org/3/',
+    }   
 }
 
 //display 20 most popular movie
@@ -240,10 +245,18 @@ function displayBackgroundImage(type, backgroundPath) {
 async function search(params) {
   const querryString = window.location.search;
   const urlParams = new URLSearchParams(querryString);
-  console.log(urlParams);
 
-
+  global.search.type = urlParams.get('type');
+  global.search.term = urlParams.get('search-term');
   
+  if(global.search.term !== '' && global.search.term !== null){
+    // todo - make request
+    const result = await searchAPIData();
+    console.log(result);
+
+  } else {
+    showAlert("Please enter a search form")
+  }
 }
 
 
@@ -302,8 +315,8 @@ function initSwiper(params) {
 //Fetching data from TMDB API
 
 async function fetchAPIData(endpoint) {
-    const API_KEY = 'd46a260bcd3d09bb7a83480819d5c14e';
-    const API_URL = 'https://api.themoviedb.org/3/';
+    const API_KEY = global.api.apiKey;
+    const API_URL = global.api.apiUrl;
 
     showSpinner();
 
@@ -323,6 +336,29 @@ function hideSpinner() {
     document.querySelector('.spinner').classList.remove('show');    
 }
 
+// make search request
+async function searchAPIData() {
+  const API_KEY = global.api.apiKey;
+  const API_URL = global.api.apiUrl;
+
+  showSpinner();
+
+  const response = await fetch(`${API_URL}search/${global.search.type}?api_key=${API_KEY}&languaage=en-US&query=${global.search.term}`);
+  const data = await response.json();
+
+  hideSpinner(); 
+
+  return data;    
+}
+
+function showSpinner() {
+  document.querySelector('.spinner').classList.add('show');    
+}
+
+function hideSpinner() {
+  document.querySelector('.spinner').classList.remove('show');    
+}
+
 //highlight active link
 function highlightActiveLink () {
     const links = document.querySelectorAll('.nav-link');
@@ -331,6 +367,20 @@ function highlightActiveLink () {
             link.classList.add('active');
         }
     })
+}
+
+
+//Show Alert
+function showAlert(message, className) {const
+
+  const alertEl = document.createElement('div');
+  alertEl.classList.add('alert', className);
+  alertEl.appendChild(document.createTextNode(message));
+  document.querySelector('#alert').appendChild(alertEl);
+
+  setTimeout(() => alertEl.remove(), 900)
+
+  
 }
 
 function addCommasToNumber(number) {
@@ -360,9 +410,9 @@ function init(){
             // console.log('Movie details');
             displayMovieDetails();
             break;
-        case '/search.httml':
-          search();
-            console.log('Search');
+        case '/search.html':
+            search();
+            // console.log('Search');
             break;
     }
     highlightActiveLink();
