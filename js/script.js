@@ -1,5 +1,11 @@
 const global = {
     currentPage: window.location.pathname,
+    search: {
+      term: '',
+      type: '',
+      page: '1',
+      totalPages: 1
+    }
 }
 
 //display 20 most popular movie
@@ -229,6 +235,19 @@ function displayBackgroundImage(type, backgroundPath) {
   
 }
 
+//Search movies and shows
+
+async function search(params) {
+  const querryString = window.location.search;
+  const urlParams = new URLSearchParams(querryString);
+  console.log(urlParams);
+
+
+  
+}
+
+
+
 //Display Slider Movies
 async function displaySlider(params) {
   const {results} = await fetchAPIData('movie/now_playing');
@@ -342,6 +361,7 @@ function init(){
             displayMovieDetails();
             break;
         case '/search.httml':
+          search();
             console.log('Search');
             break;
     }
